@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0c0a0b">
+<title>egorcik — портфолио</title>
+<style>
+:root{color-scheme:dark;--bg:#0c0a0b;--paper:#f5efeb;--muted:#bcaeb0;--red:#ff6574;--line:#eec1c52b;--pad:clamp(20px,5vw,76px);font-family:Arial,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--paper)}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:2px solid var(--red);outline-offset:5px}
+button:disabled{cursor:default}
+[hidden]{display:none!important}
+header{height:64px;padding:0 var(--pad);display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);position:relative;z-index:4;background:#0c0a0b}
+.logo,.nav button,.continue{border:0;background:none;padding:8px 0}
+.logo{font-size:19px;font-weight:700;letter-spacing:-.045em}
+
+.nav{display:flex;align-items:center;gap:clamp(16px,3.7vw,52px);font-size:13px}
+.nav button{color:var(--muted)}
+.nav button[aria-current],.nav button:hover:not(:disabled){color:var(--paper)}
+.nav button[aria-current]{box-shadow:0 1px var(--red)}
+.nav button:disabled{opacity:.55}
+main{height:calc(100svh - 64px);overflow:auto;position:relative;isolation:isolate;scrollbar-width:thin}
+#field{position:absolute;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none}
+.scene{min-height:100%;position:relative}
+#intro{display:grid;grid-template-rows:auto auto auto;place-content:center;justify-items:center;align-items:center;row-gap:clamp(9px,1.7svh,18px);padding:18px var(--pad) 26px;text-align:center;height:100%;min-height:465px;isolation:isolate}
+#intro::before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse at 50% 52%,#310a1380,transparent 61%);pointer-events:none}
+h1,h2,h3,p{margin:0}
+h1,h2{font-weight:700;line-height:1.02;letter-spacing:-.055em}
+h1{font-size:clamp(63px,min(10vw,11svh),112px);position:relative;z-index:2;text-shadow:0 4px 34px #0c0a0b}
+.intro-title{position:relative;z-index:2;pointer-events:none}
+.intro-title p{margin-top:10px;color:var(--muted);font-size:clamp(13px,1.2vw,15px);line-height:1.4}
+.rose{width:min(430px,78vw,49svh);aspect-ratio:1;position:relative;isolation:isolate;mix-blend-mode:screen;transform:perspective(900px) translate3d(var(--x,0px),var(--y,0px),0) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg))}
+.bloom,.layer{position:absolute;inset:0;width:100%;height:100%;background:url('rose.webp') center/cover no-repeat}
+.bloom{mask-image:radial-gradient(circle closest-side,#000 88%,transparent 104%)}
+.layer{border:0;padding:0;clip-path:var(--shape);background-color:#1d080c;touch-action:manipulation}
+.shadow{background:#080306;opacity:0;pointer-events:none;transition:opacity .35s}
+.shadow.removed{opacity:.72}
+.petal-one{--shape:polygon(6% 46%,7% 42%,11% 37%,16% 33%,20% 29%,19% 36%,19% 44%,21% 51%,26% 60%,36% 67%,27% 65%,18% 60%,12% 57%,8% 54%);--dx:-51vw;--dy:-33vh;--turn:-115deg}
+.petal-two{--shape:polygon(89% 37%,92% 42%,92% 48%,91% 53%,87% 58%,82% 64%,74% 70%,64% 74%,53% 76%,44% 75%,49% 69%,56% 65%,67% 62%,74% 58%,80% 52%,82% 47%,85% 42%);--dx:52vw;--dy:-27vh;--turn:100deg}
+.petal-three{--shape:polygon(23% 67%,29% 71%,38% 76%,47% 77%,54% 77%,62% 75%,73% 70%,72% 77%,68% 81%,61% 85%,55% 86%,50% 90%,43% 89%,37% 86%,31% 85%,27% 79%);--dx:32vw;--dy:47vh;--turn:145deg}
+.layer.flying{z-index:5;pointer-events:none;animation:pluck .9s cubic-bezier(.17,.62,.29,1) both}
+@keyframes pluck{0%{filter:brightness(1.45)}25%{transform:translate(calc(var(--dx) * .16),calc(var(--dy) * .12)) rotate(calc(var(--turn) * .14));opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(var(--turn)) scale(.58);opacity:0}}
+.marker{position:absolute;left:var(--mx);top:var(--my);width:8px;height:8px;border-radius:50%;background:#fff5ef;transform:translate(-50%,-50%);box-shadow:0 0 5px #fff1ec,0 0 14px 4px #ffc5c48c;pointer-events:none;animation:point-glow 2.6s ease-in-out infinite}
+@keyframes point-glow{0%,100%{opacity:.73}50%{opacity:1}}
+.guide{position:relative;z-index:2}
+.guide p{font-size:13px;line-height:1.4;color:#eadbdd;text-wrap:balance}
+.progress{margin:12px auto 0;display:flex;align-items:center;justify-content:center;gap:6px}
+.progress i{width:24px;height:2px;background:#ffffff31;transition:background .3s}
+.progress i.filled{background:var(--red);box-shadow:0 0 9px #ff657460}
+.progress output{margin-left:6px;font:12px/1 monospace;color:var(--muted)}
+#intro.departing .intro-title,#intro.departing .rose,#intro.departing .guide{animation:depart .75s ease both}
+@keyframes depart{to{opacity:0;filter:blur(8px);translate:0 -28px}}
+.content{width:min(1192px,100%);margin:auto;padding:32px var(--pad) 42px;display:flex;flex-direction:column;justify-content:center}
+.content h2{font-size:clamp(39px,min(6vw,8svh),76px);margin-bottom:clamp(22px,3.5vh,36px);text-wrap:balance}
+.content.arrive{animation:arrive .55s cubic-bezier(.2,.7,.2,1) both}
+.content.arrive .tiles,.content.arrive .steps{animation:arrive .65s .08s cubic-bezier(.2,.7,.2,1) both}
+@keyframes arrive{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(9px,1.5vw,20px)}
+.tile{border:1px solid var(--line);background:#100d10;overflow:hidden}
+.tile h3{padding:14px 16px;font-size:clamp(15px,1.55vw,19px);letter-spacing:-.02em}
+.preview{height:clamp(100px,20vh,204px);display:grid;place-items:center;overflow:hidden;border-bottom:1px solid var(--line);background:radial-gradient(ellipse at 65% 70%,#40232c,#18121b 68%)}
+.tile:nth-child(2) .preview{background:radial-gradient(ellipse at 45% 85%,#512130,#171019 74%)}
+.tile:nth-child(3) .preview{background:radial-gradient(ellipse at 65% 25%,#38283e,#171019 74%)}
+.wire{width:68%;height:67%;display:flex;flex-direction:column;gap:7%;padding:8%;border:1px solid #e5a9bd59;border-radius:5px;background:#20131dc9;transform:perspective(480px) rotateY(-14deg) rotateX(11deg);box-shadow:12px 14px 25px #08060887;transition:transform .45s ease}
+.tile:hover .wire{transform:perspective(480px) rotateY(0) rotateX(0) scale(1.05)}
+.wire b{height:10%;width:38%;background:#f7c3cd89;border-radius:2px}
+.wire i{height:12%;background:#d6a9b244;border-radius:2px;width:80%}
+.wire i:last-child{width:48%}
+.wire .block{height:48%;width:100%;background:linear-gradient(120deg,#6d2f47,#3d293c)}
+.tile:nth-child(2) .wire{transform:perspective(480px) rotateY(14deg) rotateX(10deg)}
+.tile:nth-child(2):hover .wire{transform:scale(1.05)}
+.tile:nth-child(3) .wire{width:43%;height:77%;padding:7%;transform:rotate(-10deg)}
+.tile:nth-child(3):hover .wire{transform:rotate(0) scale(1.05)}
+.tile:nth-child(3) .wire i:nth-child(even){align-self:end;background:#b9597769}
+.content-foot{margin-top:clamp(20px,4vh,38px);display:flex;justify-content:space-between;align-items:center;gap:16px;color:var(--muted);font-size:13px}
+.continue{flex-shrink:0;color:var(--paper);border-bottom:1px solid var(--red);font-size:13px}
+.continue:hover{color:var(--red)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);list-style:none;margin:0;padding:0;border-block:1px solid var(--line)}
+.steps li{padding:21px 17px 22px 0}
+.steps li+li{border-left:1px solid var(--line);padding-left:17px}
+.steps span{display:block;font:14px/1 monospace;color:var(--red);margin-bottom:18px}
+.steps h3{font-size:clamp(16px,1.6vw,20px);line-height:1.2;letter-spacing:-.025em;margin-bottom:9px}
+.steps p{font-size:14px;color:var(--muted);line-height:1.55}
+@media(max-width:650px){header{height:58px}main{height:calc(100svh - 58px)}.steps{grid-template-columns:1fr 1fr}.steps li:nth-child(3){border-left:0;padding-left:0}.steps li:nth-child(n+3){border-top:1px solid var(--line)}.steps li{padding-block:14px}.steps span{margin-bottom:10px}.steps p{font-size:13px}.tile h3{padding:10px 7px}.tiles{gap:7px}.wire{width:82%}.content-foot{align-items:baseline}.content-foot p{max-width:17ch}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:1ms!important;transition-duration:1ms!important}}
+main.switching{overflow:hidden}
+.scene.leaving{position:absolute;inset:0;pointer-events:none;animation:screen-out .49s cubic-bezier(.5,.05,.28,1) both}
+.content.arrive{animation:screen-in .72s cubic-bezier(.16,.68,.24,1) both}
+.content.arrive .tiles,.content.arrive .steps{animation:none}
+.content.arrive .tile,.content.arrive .steps li,.content.arrive .contact-actions{animation:detail-in .62s calc(.11s + var(--i,0) * .075s) both}
+.content.arrive :is(.tile,.steps li):nth-child(2){--i:1}
+.content.arrive :is(.tile,.steps li):nth-child(3){--i:2}
+.content.arrive :is(.tile,.steps li):nth-child(4){--i:3}
+@keyframes screen-out{to{transform:translateY(calc(-1 * var(--travel,100px)));opacity:0;filter:blur(5px)}}
+@keyframes screen-in{from{transform:translateY(var(--travel,100px));opacity:0;filter:blur(5px)}to{transform:none;opacity:1;filter:none}}
+@keyframes detail-in{from{transform:translateY(25px);opacity:0}to{transform:none;opacity:1}}
+.contact{text-align:center;align-items:center}
+.contact h2{margin-bottom:14px}
+.contact-actions p{color:var(--muted);font-size:clamp(14px,2vw,17px)}
+.telegram{display:inline-flex;align-items:center;gap:24px;margin-top:22px;padding:13px 18px 13px 21px;border-radius:99px;background:var(--paper);color:var(--bg);font-size:14px;font-weight:700;text-decoration:none;transition:background .22s,transform .22s}
+.telegram:hover{background:#ffc8cd;transform:translateY(-3px)}
+.telegram:focus-visible{outline:2px solid var(--red);outline-offset:5px}
+.telegram span{font-size:18px;line-height:1}
+@media(max-width:420px){.nav{gap:12px;font-size:12px}}
+.contact-rose{position:relative;width:clamp(114px,22svh,200px);aspect-ratio:1;margin-bottom:clamp(12px,2.2vh,23px);pointer-events:none}
+.contact-bloom{position:absolute;inset:0;background:url('rose.webp') center/contain no-repeat;mix-blend-mode:screen;mask-image:radial-gradient(circle closest-side,#000 86%,transparent 104%)}
+.contact.arrive .contact-bloom{animation:contact-bloom .95s .67s cubic-bezier(.21,.64,.3,1) both}
+.contact-petal{position:absolute;z-index:1;top:0;left:var(--left);width:clamp(8px,1.6vh,16px);aspect-ratio:.75;border-radius:70% 30% 59% 41% / 53% 42% 58% 47%;background:radial-gradient(ellipse at 22% 20%,#ef6873,#aa2039 52%,#510d21);opacity:0}
+.contact.arrive .contact-petal{animation:contact-petal 1.03s var(--delay) cubic-bezier(.34,.14,.58,.94) both}
+@keyframes contact-bloom{from{opacity:0;transform:translateY(9px) scale(.94);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@keyframes contact-petal{0%{opacity:0;transform:translate(0,-24px) rotate(-40deg)}20%{opacity:.95}54%{transform:translate(calc(var(--drift) * -.4),10svh) rotate(65deg)}78%{opacity:.8}100%{opacity:0;transform:translate(var(--drift),24svh) rotate(151deg)}}
+@media(prefers-reduced-motion:reduce){.contact.arrive .contact-bloom{animation:none}.contact-petal{display:none}}
+@media(max-width:560px){
+  :root{--pad:20px}
+  #intro{min-height:0}
+  .content{padding-block:24px 30px}
+  .tiles{grid-template-columns:1fr;gap:9px}
+  .tile{display:grid;grid-template-columns:92px 1fr;align-items:center}
+  .preview{height:63px;border-bottom:0;border-right:1px solid var(--line)}
+  .tile h3{padding:13px 15px}
+  .wire{width:62%;padding:7%}
+  .content-foot{margin-top:20px}
+  .steps li{padding-right:11px}
+  .steps li+li{padding-left:11px}
+  .steps li:nth-child(3){padding-left:0}
+}
+@media(max-height:520px){
+  #intro{min-height:0;padding-block:9px}
+  h1{font-size:clamp(43px,10svh,63px)}
+  .rose{width:min(70vw,42svh)}
+  .intro-title p{margin-top:3px}
+  .progress{margin-top:6px}
+}
+.petal-target{position:absolute;z-index:6;left:var(--mx);top:var(--my);width:44px;height:44px;display:grid;place-items:center;transform:translate(-50%,-50%);border:0;border-radius:50%;padding:0;background:transparent;touch-action:manipulation}
+.petal-target:focus-visible{outline:2px solid #ffe6df;outline-offset:-3px}
+.petal-target:disabled{visibility:hidden}
+.petal-target .marker{position:static;transform:none}
+.petal-target:nth-last-child(2) .marker{animation-delay:-.8s}
+.petal-target:last-child .marker{animation-delay:-1.6s}
+.cutout{pointer-events:none}
+.logo,.nav button,.continue{min-height:44px}
+.nav button[aria-current]{box-shadow:inset 0 -1px var(--red)}
+@media(max-width:365px){.nav{gap:9px}.nav button{font-size:11px}:root{--pad:15px}}
+@media(max-height:435px){#intro{min-height:266px}}
+</style>
+</head>
+<body>
+<header>
+<button class="logo" type="button" data-screen="intro" aria-label="На первый экран">egorcik</button>
+<nav class="nav" aria-label="Разделы портфолио">
+<button type="button" data-screen="work" disabled>Работы</button>
+<button type="button" data-screen="process" disabled>Как я работаю</button>
+<button type="button" data-screen="contact" disabled>Контакты</button>
+</nav>
+</header>
+<main>
+<canvas id="field" aria-hidden="true"></canvas>
+<section id="intro" class="scene" aria-labelledby="intro-title">
+<div class="intro-title"><h1 id="intro-title">egorcik</h1><p>Лендинги, сайты и Telegram-боты</p></div>
+<div class="rose">
+<div class="bloom" aria-hidden="true"></div>
+<div class="layer shadow petal-one" aria-hidden="true"></div>
+<div class="layer shadow petal-two" aria-hidden="true"></div>
+<div class="layer shadow petal-three" aria-hidden="true"></div>
+<div class="layer cutout petal-one" aria-hidden="true"></div>
+<div class="layer cutout petal-two" aria-hidden="true"></div>
+<div class="layer cutout petal-three" aria-hidden="true"></div>
+<button class="petal-target" type="button" style="--mx:15%;--my:48%" aria-label="Снять левый лепесток"><span class="marker" aria-hidden="true"></span></button>
+<button class="petal-target" type="button" style="--mx:81%;--my:57%" aria-label="Снять правый лепесток"><span class="marker" aria-hidden="true"></span></button>
+<button class="petal-target" type="button" style="--mx:48%;--my:83%" aria-label="Снять нижний лепесток"><span class="marker" aria-hidden="true"></span></button>
+</div>
+<div class="guide"><p>Сними три лепестка, чтобы открыть портфолио</p><div class="progress"><i></i><i></i><i></i><output aria-live="polite">0 / 3</output></div></div>
+</section>
+<section id="work" class="scene content" aria-labelledby="work-title" hidden>
+<h2 id="work-title" tabindex="-1">Мои работы</h2>
+<div class="tiles">
+<article class="tile"><div class="preview" aria-hidden="true"><div class="wire"><b></b><i class="block"></i><i></i></div></div><h3>Лендинги</h3></article>
+<article class="tile"><div class="preview" aria-hidden="true"><div class="wire"><b></b><i></i><i class="block"></i><i></i></div></div><h3>Сайты</h3></article>
+<article class="tile"><div class="preview" aria-hidden="true"><div class="wire"><b></b><i></i><i></i><i></i><i></i></div></div><h3>Telegram-боты</h3></article>
+</div>
+<div class="content-foot"><p>Здесь появятся первые проекты.</p><button class="continue" type="button" data-screen="process">Как я работаю →</button></div>
+</section>
+<section id="process" class="scene content" aria-labelledby="process-title" hidden>
+<h2 id="process-title" tabindex="-1">Как я работаю</h2>
+<ol class="steps">
+<li><span aria-hidden="true">01</span><h3>Обсуждаем задачу</h3><p>Уточняем, кто будет пользоваться сайтом и что он должен уметь.</p></li>
+<li><span aria-hidden="true">02</span><h3>Продумываем дизайн</h3><p>Выстраиваем страницы, выбираем стиль и определяем, где нужна анимация.</p></li>
+<li><span aria-hidden="true">03</span><h3>Пишем код</h3><p>Собираем интерфейс, подключаем функции и настраиваем движение.</p></li>
+<li><span aria-hidden="true">04</span><h3>Проверяем и запускаем</h3><p>Тестируем сайт на телефоне и компьютере, правим детали и публикуем.</p></li>
+</ol>
+<div class="content-foot"><button class="continue" type="button" data-screen="work">← К работам</button><button class="continue" type="button" data-screen="contact">Обсудить заказ →</button></div>
+</section>
+<section id="contact" class="scene content contact" aria-labelledby="contact-title" hidden>
+<div class="contact-rose" aria-hidden="true">
+<div class="contact-bloom"></div>
+<i class="contact-petal" style="--left:8%;--drift:-22px;--delay:.04s"></i>
+<i class="contact-petal" style="--left:29%;--drift:16px;--delay:.17s"></i>
+<i class="contact-petal" style="--left:48%;--drift:-12px;--delay:.09s"></i>
+<i class="contact-petal" style="--left:69%;--drift:28px;--delay:.27s"></i>
+<i class="contact-petal" style="--left:90%;--drift:-20px;--delay:.12s"></i>
+</div>
+<h2 id="contact-title" tabindex="-1">Есть заказ?</h2>
+<div class="contact-actions">
+<p>Пиши в Telegram, обсудим задачу.</p>
+<a class="telegram" href="https://t.me/dobrenkiegorcik" target="_blank" rel="noopener noreferrer">@dobrenkiegorcik <span aria-hidden="true">↗</span></a>
+</div>
+</section>
+</main>
+<script>
+const main = document.querySelector('main');
+const intro = document.querySelector('#intro');
+const rose = document.querySelector('.rose');
+const petals = [...rose.querySelectorAll('button')];
+const shadows = [...rose.querySelectorAll('.shadow')];
+const cutouts = [...rose.querySelectorAll('.cutout')];
+const segments = [...document.querySelectorAll('.progress i')];
+const progress = document.querySelector('output');
+const nav = [...document.querySelectorAll('.nav button')];
+const screens = [...document.querySelectorAll('.scene')];
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+let current = 'intro', count = 0, unlocked = false, opening = false;
+function resetRose() {
+  count = 0;
+  unlocked = false;
+  for (const button of nav) button.disabled = true;
+  for (const petal of petals) petal.disabled = false;
+  for (const shadow of shadows) shadow.classList.remove('removed');
+  for (const cutout of cutouts) cutout.classList.remove('flying');
+  for (const segment of segments) segment.classList.remove('filled');
+  progress.value = '0 / 3';
+  intro.querySelector('.guide p').textContent = 'Сними три лепестка, чтобы открыть портфолио';
+}
+let switching = false, queuedScreen = null;
+function showScreen(id) {
+  if ((!unlocked && id !== 'intro') || opening) return;
+  if (switching) {
+    queuedScreen = id;
+    return;
+  }
+  if (id === current) return;
+  const previous = screens.find(screen => screen.id === current);
+  const next = screens.find(screen => screen.id === id);
+  const direction = Math.sign(screens.indexOf(next) - screens.indexOf(previous));
+  const animate = !reduced.matches && id !== 'intro' && current !== 'intro';
+  current = id;
+  next.hidden = false;
+  main.scrollTop = 0;
+  main.style.setProperty('--travel', direction * Math.min(185, main.clientHeight * .23) + 'px');
+  for (const button of nav) {
+    if (button.dataset.screen === id) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  }
+  if (id === 'intro') {
+    resetRose();
+    document.querySelector('.logo').focus({preventScroll:true});
+  } else {
+    next.classList.add('arrive');
+    next.querySelector('h2').focus({preventScroll:true});
+  }
+  if (!animate) {
+    previous.hidden = true;
+    previous.classList.remove('arrive');
+    return;
+  }
+  switching = true;
+  waveDirection = direction;
+  burstAt = performance.now();
+  previous.inert = true;
+  previous.classList.remove('arrive');
+  previous.classList.add('leaving');
+  main.classList.add('switching');
+  setTimeout(() => {
+    previous.hidden = true;
+    previous.inert = false;
+    previous.classList.remove('leaving');
+    main.classList.remove('switching');
+    switching = false;
+    const queued = queuedScreen;
+    queuedScreen = null;
+    if (queued) showScreen(queued);
+  }, 490);
+}
+for (const button of document.querySelectorAll('[data-screen]')) {
+  button.addEventListener('click', () => showScreen(button.dataset.screen));
+}
+petals.forEach((button, index) => button.addEventListener('click', () => {
+  const hadFocus = document.activeElement === button;
+  button.disabled = true;
+  cutouts[index].classList.add('flying');
+  shadows[index].classList.add('removed');
+  count += 1;
+  segments[count - 1].classList.add('filled');
+  progress.value = count + ' / 3';
+  const nextPetal = petals.find(petal => !petal.disabled);
+  if (nextPetal && hadFocus) nextPetal.focus({preventScroll:true});
+  if (count < petals.length) return;
+  opening = true;
+  const finish = () => {
+    unlocked = true;
+    opening = false;
+    for (const item of nav) item.disabled = false;
+    intro.classList.remove('departing');
+    intro.querySelector('.guide p').textContent = 'Портфолио открыто';
+    showScreen('work');
+  };
+  if (reduced.matches) finish();
+  else {
+    waveDirection = 1;
+    burstAt = performance.now();
+    setTimeout(() => intro.classList.add('departing'), 190);
+    setTimeout(finish, 940);
+  }
+}));
+const canvas = document.querySelector('#field');
+const ctx = canvas.getContext('2d');
+const motes = Array.from({length: 470}, () => ({
+  x: Math.random() * 2 - 1, depth: Math.random(), phase: Math.random() * 6.283,
+}));
+let width = 0, height = 0, burstAt = -2000, waveDirection = 1, mouseX = 0, mouseY = 0, targetX = 0, targetY = 0, frame = 0;
+function resize() {
+  width = main.clientWidth;
+  height = main.clientHeight;
+  const scale = Math.min(devicePixelRatio, 2);
+  canvas.width = Math.round(width * scale);
+  canvas.height = Math.round(height * scale);
+  ctx.setTransform(scale, 0, 0, scale, 0, 0);
+  render(performance.now());
+}
+function render(time) {
+  ctx.clearRect(0, 0, width, height);
+  const idle = reduced.matches ? 0 : time * .00065;
+  const elapsed = Math.max(0, time - burstAt);
+  const wave = reduced.matches ? 0 : Math.max(0, 1 - elapsed / 1150);
+  const sweep = (1 - wave ** 3) * wave ** .35;
+  const playing = current === 'intro';
+  for (const {x, depth, phase} of motes) {
+    const perspective = .15 + .96 * depth ** 1.5;
+    const px = width * (.5 + x * perspective * .78) + Math.sin(phase + idle) * (4 + depth * 12) + mouseX * perspective * 11 + sweep * x * width * .4;
+    const py = height * (.48 + depth ** 2 * .58) + Math.cos(phase + idle) * (4 + depth * 11) + mouseY * perspective * 9 - waveDirection * sweep * height * (.45 + depth * .7);
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(phase + idle * (.2 + depth * .5) + sweep * 4 * x);
+    const size = .65 + 4.3 * depth ** 2;
+    ctx.scale(size, size);
+    ctx.globalAlpha = (.25 + depth * .47) * (playing ? .9 : .19 + sweep * .85);
+    ctx.fillStyle = depth > .88 ? '#f75a68' : depth > .55 ? '#bd3048' : '#903246';
+    ctx.beginPath();
+    ctx.moveTo(0, 1.2);
+    ctx.bezierCurveTo(-1.3, .16, -1.18, -1, -.2, -.78);
+    ctx.bezierCurveTo(.55, -1.34, 1.37, -.56, 0, 1.2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+function tick(time) {
+  if (current === 'intro') {
+    mouseX += (targetX - mouseX) * .075;
+    mouseY += (targetY - mouseY) * .075;
+    const reach = Math.min(34, width * .055);
+    rose.style.setProperty('--x', mouseX * reach + 'px');
+    rose.style.setProperty('--y', mouseY * reach * .78 + 'px');
+    rose.style.setProperty('--tilt-x', mouseY * -9 + 'deg');
+    rose.style.setProperty('--tilt-y', mouseX * 12 + 'deg');
+  }
+  render(time);
+  frame = requestAnimationFrame(tick);
+}
+function updateMotion() {
+  cancelAnimationFrame(frame);
+  if (document.hidden) return;
+  if (reduced.matches) {
+    targetX = targetY = mouseX = mouseY = 0;
+    for (const property of ['--x', '--y', '--tilt-x', '--tilt-y']) rose.style.removeProperty(property);
+    render(performance.now());
+  } else frame = requestAnimationFrame(tick);
+}
+intro.addEventListener('pointermove', event => {
+  if (reduced.matches || event.pointerType !== 'mouse') return;
+  const rect = intro.getBoundingClientRect();
+  targetX = Math.max(-1, Math.min(1, (event.clientX - rect.left) / rect.width * 2 - 1));
+  targetY = Math.max(-1, Math.min(1, (event.clientY - rect.top) / rect.height * 2 - 1));
+});
+intro.addEventListener('pointerleave', () => {
+  targetX = targetY = 0;
+});
+new ResizeObserver(resize).observe(main);
+document.addEventListener('visibilitychange', updateMotion);
+reduced.addEventListener('change', updateMotion);
+updateMotion();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
